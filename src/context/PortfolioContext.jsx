@@ -32,13 +32,15 @@ export const PortfolioProvider = ({ children }) => {
     organizations: []
   });
 
-  // Add customization settings
+  // Add customization settings with enhanced layout options
   const [customization, setCustomization] = useState({
     colors: {
       primary: '#4F46E5', // Indigo 600 (default)
+      primaryRgb: '79, 70, 229', // RGB values for transparency
       secondary: '#F9FAFB', // Gray 50
       text: '#1F2937', // Gray 800
       accent: '#7C3AED', // Violet 600
+      accentRgb: '124, 58, 237', // RGB values for transparency
       background: '#FFFFFF' // White
     },
     fonts: {
@@ -48,7 +50,27 @@ export const PortfolioProvider = ({ children }) => {
     layout: {
       contentWidth: 'max-w-6xl', // Default max width
       spacing: 'standard', // standard, compact, spacious
-      sectionOrder: ['header', 'hero', 'about', 'skills', 'experience', 'projects', 'achievements', 'certificates', 'organizations']
+      sectionOrder: ['header', 'hero', 'about', 'skills', 'experience', 'projects', 'achievements', 'certificates', 'organizations'],
+      // Enhanced layout options for positioning elements
+      sectionLayouts: {
+        hero: {
+          style: 'standard', // standard, centered, split
+          imagePosition: 'right', // left, right
+          alignment: 'left', // left, center, right
+        },
+        about: {
+          style: 'standard', // standard, centered, split
+          imagePosition: 'left', // left, right
+        },
+        skills: {
+          columns: 3, // 2, 3, 4
+          style: 'bars', // bars, tags, cards, list
+        },
+        projects: {
+          columns: 3, // 2, 3, 4
+          style: 'cards', // cards, list, masonry
+        }
+      }
     }
   });
 
@@ -125,6 +147,22 @@ export const PortfolioProvider = ({ children }) => {
     }));
   };
 
+  const updateSectionLayout = (sectionName, layoutUpdates) => {
+    setCustomization(prev => ({
+      ...prev,
+      layout: {
+        ...prev.layout,
+        sectionLayouts: {
+          ...prev.layout.sectionLayouts,
+          [sectionName]: {
+            ...prev.layout.sectionLayouts[sectionName],
+            ...layoutUpdates
+          }
+        }
+      }
+    }));
+  };
+
   const reorderSections = (newOrder) => {
     setCustomization(prev => ({
       ...prev,
@@ -147,6 +185,7 @@ export const PortfolioProvider = ({ children }) => {
       updateColors,
       updateFonts,
       updateLayout,
+      updateSectionLayout,
       reorderSections
     }}>
       {children}
