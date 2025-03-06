@@ -13,6 +13,7 @@ import Organizations from '../components/portfolio-sections/Organizations';
 const Published = () => {
   const { portfolioId } = useParams();
   const [portfolio, setPortfolio] = useState(null);
+  const [customization, setCustomization] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +47,25 @@ const Published = () => {
           },
           // ... other sections would be populated in a real app
         });
+
+        setCustomization({
+          colors: {
+            primary: '#4F46E5',
+            secondary: '#F9FAFB',
+            text: '#1F2937',
+            accent: '#7C3AED',
+            background: '#FFFFFF'
+          },
+          fonts: {
+            heading: 'Montserrat, sans-serif',
+            body: 'Open Sans, sans-serif'
+          },
+          layout: {
+            contentWidth: 'max-w-6xl',
+            spacing: 'standard',
+            sectionOrder: ['header', 'hero', 'about', 'skills', 'experience', 'projects', 'achievements', 'certificates', 'organizations']
+          }
+        });
         
         setLoading(false);
       } catch (err) {
@@ -56,6 +76,90 @@ const Published = () => {
 
     fetchPortfolio();
   }, [portfolioId]);
+
+  // Apply custom styles
+  const applyCustomStyles = () => {
+    if (!customization) return null;
+
+    const { colors, fonts, layout } = customization;
+
+    // Convert spacing setting to actual CSS values
+    const getSpacingValue = () => {
+      switch (layout.spacing) {
+        case 'compact': return '2rem';
+        case 'spacious': return '6rem';
+        case 'standard':
+        default: return '4rem';
+      }
+    };
+
+    const styles = `
+      :root {
+        --color-primary: ${colors.primary};
+        --color-secondary: ${colors.secondary};
+        --color-text: ${colors.text};
+        --color-accent: ${colors.accent};
+        --color-background: ${colors.background};
+        --font-heading: ${fonts.heading};
+        --font-body: ${fonts.body};
+        --content-width: ${layout.contentWidth};
+        --section-spacing: ${getSpacingValue()};
+      }
+
+      body {
+        color: var(--color-text);
+        background-color: var(--color-background);
+        font-family: var(--font-body);
+        margin: 0;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+      }
+
+      .section {
+        padding-top: var(--section-spacing);
+        padding-bottom: var(--section-spacing);
+      }
+
+      .section:nth-child(even) {
+        background-color: var(--color-secondary);
+      }
+
+      .content-container {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      @media (min-width: 768px) {
+        .content-container {
+          max-width: var(--content-width);
+        }
+      }
+    `;
+
+    return <style>{styles}</style>;
+  };
+
+  // Get sections based on customized order
+  const renderSections = () => {
+    if (!customization || !portfolio) return null;
+
+    const sectionComponents = {
+      header: <Header key="header" />,
+      hero: <Hero key="hero" />,
+      about: <About key="about" className="section" />,
+      skills: <Skills key="skills" className="section" />,
+      experience: <Experience key="experience" className="section" />,
+      projects: <Projects key="projects" className="section" />,
+      achievements: <Achievements key="achievements" className="section" />,
+      certificates: <Certificates key="certificates" className="section" />,
+      organizations: <Organizations key="organizations" className="section" />
+    };
+
+    return customization.layout.sectionOrder.map(sectionId => sectionComponents[sectionId]);
+  };
 
   if (loading) {
     return (
@@ -81,7 +185,7 @@ const Published = () => {
     );
   }
 
-  if (!portfolio) {
+  if (!portfolio || !customization) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -95,20 +199,14 @@ const Published = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* In a real implementation, you would use the portfolio data to render each component */}
-      <Header />
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <Projects />
-      <Achievements />
-      <Certificates />
-      <Organizations />
-      
-      <div className="py-6 text-center text-sm text-gray-500 border-t">
-        <p>Built with <a href="/" className="text-indigo-600 hover:underline">PortfolioBuild</a></p>
+    <div className="min-h-screen">
+      {applyCustomStyles()}
+      <div className="published-portfolio">
+        {renderSections()}
+        
+        <div className="py-6 text-center text-sm text-gray-500 border-t">
+          <p>Built with <a href="/" className="text-primary hover:underline">PortfolioBuild</a></p>
+        </div>
       </div>
     </div>
   );

@@ -32,6 +32,26 @@ export const PortfolioProvider = ({ children }) => {
     organizations: []
   });
 
+  // Add customization settings
+  const [customization, setCustomization] = useState({
+    colors: {
+      primary: '#4F46E5', // Indigo 600 (default)
+      secondary: '#F9FAFB', // Gray 50
+      text: '#1F2937', // Gray 800
+      accent: '#7C3AED', // Violet 600
+      background: '#FFFFFF' // White
+    },
+    fonts: {
+      heading: 'Inter, sans-serif',
+      body: 'Inter, sans-serif'
+    },
+    layout: {
+      contentWidth: 'max-w-6xl', // Default max width
+      spacing: 'standard', // standard, compact, spacious
+      sectionOrder: ['header', 'hero', 'about', 'skills', 'experience', 'projects', 'achievements', 'certificates', 'organizations']
+    }
+  });
+
   const updateSection = (sectionName, data) => {
     setPortfolio(prev => ({
       ...prev,
@@ -74,14 +94,60 @@ export const PortfolioProvider = ({ children }) => {
     }));
   };
 
+  // Add customization methods
+  const updateColors = (colorUpdates) => {
+    setCustomization(prev => ({
+      ...prev,
+      colors: {
+        ...prev.colors,
+        ...colorUpdates
+      }
+    }));
+  };
+
+  const updateFonts = (fontUpdates) => {
+    setCustomization(prev => ({
+      ...prev,
+      fonts: {
+        ...prev.fonts,
+        ...fontUpdates
+      }
+    }));
+  };
+
+  const updateLayout = (layoutUpdates) => {
+    setCustomization(prev => ({
+      ...prev,
+      layout: {
+        ...prev.layout,
+        ...layoutUpdates
+      }
+    }));
+  };
+
+  const reorderSections = (newOrder) => {
+    setCustomization(prev => ({
+      ...prev,
+      layout: {
+        ...prev.layout,
+        sectionOrder: newOrder
+      }
+    }));
+  };
+
   return (
     <PortfolioContext.Provider value={{
       portfolio,
+      customization,
       updateSection,
       selectTemplate,
       addItem,
       updateItem,
-      removeItem
+      removeItem,
+      updateColors,
+      updateFonts,
+      updateLayout,
+      reorderSections
     }}>
       {children}
     </PortfolioContext.Provider>

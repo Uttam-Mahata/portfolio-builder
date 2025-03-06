@@ -16,10 +16,11 @@ import { usePortfolio } from '../context/PortfolioContext';
 
 const Preview = () => {
   const navigate = useNavigate();
-  const { portfolio } = usePortfolio();
+  const { portfolio, customization } = usePortfolio();
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
   const [publishing, setPublishing] = useState(false);
+  const { layout } = customization;
 
   const handleEdit = () => {
     navigate('/editor');
@@ -41,8 +42,25 @@ const Preview = () => {
     setShowPublishModal(false);
   };
 
+  // Get sections based on customized order
+  const renderSections = () => {
+    const sectionComponents = {
+      header: <Header key="header" />,
+      hero: <Hero key="hero" />,
+      about: <About key="about" className="section" />,
+      skills: <Skills key="skills" className="section" />,
+      experience: <Experience key="experience" className="section" />,
+      projects: <Projects key="projects" className="section" />,
+      achievements: <Achievements key="achievements" className="section" />,
+      certificates: <Certificates key="certificates" className="section" />,
+      organizations: <Organizations key="organizations" className="section" />
+    };
+
+    return layout.sectionOrder.map(sectionId => sectionComponents[sectionId]);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       <div className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold text-indigo-600">PortfolioBuild</h1>
@@ -69,15 +87,7 @@ const Preview = () => {
       
       <div className="flex-grow">
         <div className="preview-container">
-          <Header />
-          <Hero />
-          <About />
-          <Skills />
-          <Experience />
-          <Projects />
-          <Achievements />
-          <Certificates />
-          <Organizations />
+          {renderSections()}
         </div>
       </div>
       
